@@ -1,70 +1,103 @@
-# PROJETO CG - STORE-API
+# PROJETO CG - STORE API
 
-O "PROJETO CG - STORE-API" tem como principal objetivo o desenvolvimento do back-end de uma aplicação projetada para gerenciar o estoque de produtos e facilitar as operações de vendas.
+O "PROJETO CG - STORE API" tem como principal objetivo o desenvolvimento do back-end de uma aplicação projetada para gerenciar o estoque de produtos e facilitar as operações de vendas.
 
 ## Instrucoes
 
-### Pre requisitos
+### Pré-requisitos
 
-Requirements for the software and other tools to build, test and push
+Requisitos para o software e outras ferramentas necessárias para construir, testar e implantar:
 
--   DB: [mysql](https://www.mysql.com/)
--   BACKEND:
-    -   Linguagem: [php](https://www.php.net/)
-    -   Gereciador de pacotes: [composer](https://getcomposer.org/)
-    -   Framework: [laravel](https://laravel.com/docs/10.x/installation)
+-   **Banco de Dados**: [MySQL](https://www.mysql.com/)
+-   **BACKEND**:
+    -   **Linguagem**: [PHP](https://www.php.net/)
+    -   **Gerenciador de Pacotes**: [Composer](https://getcomposer.org/)
+    -   **Framework**: [Laravel](https://laravel.com/docs/10.x/installation)
 
-### Rodando aplicacao
+### Executando a Aplicação
 
-Com o DB MySQL rodando e alterando no arquivo .env, linha 14 DB_DATABASE=DB_TESTE_CG, alterar para o nome que quiser no seu DB.
+Com o banco de dados MySQL em execução, alterar o arquivo .env linha 14 (DB_DATABASE=DB_TESTE_CG).
+(Altere para o nome desejado no seu banco de dados.)
 
-Entrar na pasta principal da aplicacao e rodar no temrinal o comando:
+Acesse a pasta principal da aplicação e execute o seguinte comando no terminal:
 
+```shell
     php artisan migrate && php artisan serve
+```
 
-logo apos aparecera uma mensagem indicando em que porta o projeto roda.
-entao pode usar o seru client preferido(Insomnia, Postman, ThunderClient) para acessar as rotas da API.
+Em seguida, uma mensagem indicará em qual porta o projeto está sendo executado.
+Você pode usar o seu cliente preferido (Insomnia, Postman, ThunderClient) para acessar as rotas da API.
 
 ### Endpoints:
 
-    Produtos:
-        GET     http://localhost:8000/products              (LISTA TODOS OS PRODUTOS)
-        GET     http://localhost:8000/products/:id          (RETORNA PRODUTO PELO ID)
-        POST    http://localhost:8000/products              (CADASTRA UM PRODUTO)
-                    BODY_EXAMPLE_JSON = {
-                        "name": "nome do produto",
-                        "description": "descricao do produto",
-                        "price": 1.99,
-                        "stock": 100,
-                    }
-        PATCH   http://localhost:8000/products/:id          (ATUALIZA UM PRODUTO)
-        DELETE  http://localhost:8000/products/:id          (DELETA UM PRODUTO)
+#### Produtos:
 
-    Vendas:
-        GET     http://localhost:8000/sales                 (HISTORICO DE VENDAS)
-        POST    http://localhost:8000/sales                 (CRIA UMA VENDA)
-                    BODY_EXAMPLE_JSON = {
-                        "product_id": 1,
-                        "quantity": 5,
-                    }
-        PATCH   http://localhost:8000/sales/:id             (ATUALIZA UMA VENDA)
-                    BODY_EXAMPLE_JSON = {
-                        "product_id": 1,
-                        "quantity": 5,
-                    }
-        PATCH   http://localhost:8000/sales/:id/cancel      (CANCELA UMA VENDA)
-                     BODY_EXAMPLE_JSON = {
-                        "status": "canceled"
-                    }
+<details>
+<summary>Clique para exibir os Endpoints dos Produtos</summary>
 
-## Descricao do projeto
+-   **GET** [http://localhost:8000/products](http://localhost:8000/products)
+    -   (Lista todos os produtos)
+-   **GET** [http://localhost:8000/products/:id](http://localhost:8000/products/:id)
+    -   (Retorna produto pelo id)
+-   **POST** [http://localhost:8000/products](http://localhost:8000/products)
+    -   (Cadastra um produto)
+        -   **Exemplo de corpo da requisição em formato JSON**:
+        ```json
+        {
+            "name": "nome do produto",
+            "description": "descrição do produto",
+            "price": 1.99,
+            "stock": 100
+        }
+        ```
+-   **PATCH** [http://localhost:8000/products/:id](http://localhost:8000/products/:id)
+    -   (Atualiza um produto)
+-   **DELETE** [http://localhost:8000/products/:id](http://localhost:8000/products/:id)
+    -   (Deleta um produto)
+
+</details>
+
+#### Vendas:
+
+<details>
+<summary>Clique para exibir os Endpoints das Vendas</summary>
+
+-   **GET** [http://localhost:8000/sales](http://localhost:8000/sales)
+    -   (Histórico de Vendas)
+-   **POST** [http://localhost:8000/sales](http://localhost:8000/sales)
+    -   (Cria uma venda)
+    -   **Exemplo de corpo em formato JSON**:
+    ```json
+    {
+        "product_id": 1,
+        "quantity": 5
+    }
+    ```
+-   **PATCH** [http://localhost:8000/sales/:id](http://localhost:8000/sales/:id)
+    -   (Atualiza uma venda)
+    -   **Exemplo de corpo em formato JSON**:
+    ```json
+    {
+        "product_id": 1,
+        "quantity": 5
+    }
+    ```
+-   **PATCH** [http://localhost:8000/sales/:id/cancel](http://localhost:8000/sales/:id/cancel) - (Cencela uma venda) - **Exemplo de corpo em formato JSON**:
+`json
+    {
+        "status": "canceled"
+    }
+    `
+</details>
+
+## Descrição do Projeto
 
 <details>
 <summary>Clique para exibir os Requisitos do Projeto</summary>
 
 ### REQUISITO 1
 
-Criar um endpoint que permita o cadastro de um novo produto com os campos: name, description, price e stock. Nome, descircao, preco e quantidade em estoque, respectivamente.
+Criar um endpoint que permita o cadastro de um novo produto com os campos: name, description, price e stock. Nome, descrição, preço e quantidade em estoque, respectivamente.
 
 ### REQUISITO 2
 
@@ -100,7 +133,7 @@ Adicionar um novo endpoint que permita editar uma venda, onde o produto é selec
 
 ### REQUISITO 10
 
-Criar um endpoint para listar o histórico de vendas, incluindo informações sobre os produtos vendidos, quantidades, data da venda.
+Criar um endpoint para listar o histórico de vendas, incluindo informações sobre os produtos vendidos, quantidades e data da venda.
 
 </details>
 
@@ -111,6 +144,5 @@ Criar um endpoint para listar o histórico de vendas, incluindo informações so
 
 ## License
 
-This project is licensed under the [CC0 1.0 Universal](LICENSE.md)
-Creative Commons License - see the [LICENSE.md](LICENSE.md) file for
-details
+Este projeto está licenciado sob a [Licença Universal CC0 1.0](LICENSE.md) da Creative Commons
+consulte o arquivo [LICENSE.md](LICENSE.md) para mais detalhes.
