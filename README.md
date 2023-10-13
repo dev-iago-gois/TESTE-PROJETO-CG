@@ -1,66 +1,116 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# PROJETO CG - STORE-API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+O "PROJETO CG - STORE-API" tem como principal objetivo o desenvolvimento do back-end de uma aplicação projetada para gerenciar o estoque de produtos e facilitar as operações de vendas.
 
-## About Laravel
+## Instrucoes
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Pre requisitos
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Requirements for the software and other tools to build, test and push
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-   DB: [mysql](https://www.mysql.com/)
+-   BACKEND:
+    -   Linguagem: [php](https://www.php.net/)
+    -   Gereciador de pacotes: [composer](https://getcomposer.org/)
+    -   Framework: [laravel](https://laravel.com/docs/10.x/installation)
 
-## Learning Laravel
+### Rodando aplicacao
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Com o DB MySQL rodando e alterando no arquivo .env, linha 14 DB_DATABASE=DB_TESTE_CG, alterar para o nome que quiser no seu DB.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Entrar na pasta principal da aplicacao e rodar no temrinal o comando:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    php artisan migrate && php artisan serve
 
-## Laravel Sponsors
+logo apos aparecera uma mensagem indicando em que porta o projeto roda.
+entao pode usar o seru client preferido(Insomnia, Postman, ThunderClient) para acessar as rotas da API.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### Endpoints:
 
-### Premium Partners
+    Produtos:
+        GET     http://localhost:8000/products              (LISTA TODOS OS PRODUTOS)
+        GET     http://localhost:8000/products/:id          (RETORNA PRODUTO PELO ID)
+        POST    http://localhost:8000/products              (CADASTRA UM PRODUTO)
+                    BODY_EXAMPLE_JSON = {
+                        "name": "nome do produto",
+                        "description": "descricao do produto",
+                        "price": 1.99,
+                        "stock": 100,
+                    }
+        PATCH   http://localhost:8000/products/:id          (ATUALIZA UM PRODUTO)
+        DELETE  http://localhost:8000/products/:id          (DELETA UM PRODUTO)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+    Vendas:
+        GET     http://localhost:8000/sales                 (HISTORICO DE VENDAS)
+        POST    http://localhost:8000/sales                 (CRIA UMA VENDA)
+                    BODY_EXAMPLE_JSON = {
+                        "product_id": 1,
+                        "quantity": 5,
+                    }
+        PATCH   http://localhost:8000/sales/:id             (ATUALIZA UMA VENDA)
+                    BODY_EXAMPLE_JSON = {
+                        "product_id": 1,
+                        "quantity": 5,
+                    }
+        PATCH   http://localhost:8000/sales/:id/cancel      (CANCELA UMA VENDA)
+                     BODY_EXAMPLE_JSON = {
+                        "status": "canceled"
+                    }
 
-## Contributing
+## Descricao do projeto
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+<details>
+<summary>Clique para exibir os Requisitos do Projeto</summary>
 
-## Code of Conduct
+### REQUISITO 1
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Criar um endpoint que permita o cadastro de um novo produto com os campos: name, description, price e stock. Nome, descircao, preco e quantidade em estoque, respectivamente.
 
-## Security Vulnerabilities
+### REQUISITO 2
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Implementar um endpoint para listar todos os produtos disponíveis no estoque.
+
+### REQUISITO 3
+
+Desenvolver um endpoint para obter os detalhes de um produto através do ID.
+
+### REQUISITO 4
+
+Criar um endpoint para atualizar as informações de um produto através do ID.
+
+### REQUISITO 5
+
+Implementar um endpoint para excluir um produto através do ID.
+
+### REQUISITO 6
+
+Garantir que a quantidade em estoque seja atualizada automaticamente quando novas unidades são vendidas.
+
+### REQUISITO 7
+
+Adicionar um novo endpoint que permita realizar uma venda, onde o produto é selecionado e a quantidade vendida é registrada. Isso deve reduzir a quantidade de estoque do produto.
+
+### REQUISITO 8
+
+Adicionar um novo endpoint que permita cancelar uma venda, onde o produto é selecionado e a quantidade vendida é registrada. Isso deve aumentar a quantidade de estoque do produto.
+
+### REQUISITO 9
+
+Adicionar um novo endpoint que permita editar uma venda, onde o produto é selecionado e a quantidade vendida é registrada. Isso deve reduzir ou aumentar a quantidade em estoque do produto dependendo da edição.
+
+### REQUISITO 10
+
+Criar um endpoint para listar o histórico de vendas, incluindo informações sobre os produtos vendidos, quantidades, data da venda.
+
+</details>
+
+## Autor
+
+-   **Iago Gois** - _Web Developer_
+    [dev-iago-gois](https://github.com/dev-iago-gois)
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the [CC0 1.0 Universal](LICENSE.md)
+Creative Commons License - see the [LICENSE.md](LICENSE.md) file for
+details

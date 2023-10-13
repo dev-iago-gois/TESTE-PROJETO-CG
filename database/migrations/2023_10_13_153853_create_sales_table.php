@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId("product_id")->constrained("products");
             $table->integer("quantity");
+            $table->string('status', 20)->default('pending');
             $table->timestamps();
         });
     }
