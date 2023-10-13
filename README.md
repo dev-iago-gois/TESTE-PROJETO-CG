@@ -32,6 +32,9 @@ Você pode usar o seu cliente preferido (Insomnia, Postman, ThunderClient) para 
 
 #### Produtos:
 
+<details>
+<summary>Clique para exibir os Endpoints dos Produtos</summary>
+
 -   **GET** [http://localhost:8000/products](http://localhost:8000/products)
     -   (Lista todos os produtos)
 -   **GET** [http://localhost:8000/products/:id](http://localhost:8000/products/:id)
@@ -52,7 +55,12 @@ Você pode usar o seu cliente preferido (Insomnia, Postman, ThunderClient) para 
 -   **DELETE** [http://localhost:8000/products/:id](http://localhost:8000/products/:id)
     -   (Deleta um produto)
 
+</details>
+
 #### Vendas:
+
+<details>
+<summary>Clique para exibir os Endpoints das Vendas</summary>
 
 -   **GET** [http://localhost:8000/sales](http://localhost:8000/sales)
     -   (Histórico de Vendas)
@@ -74,14 +82,13 @@ Você pode usar o seu cliente preferido (Insomnia, Postman, ThunderClient) para 
         "quantity": 5
     }
     ```
--   **PATCH** [http://localhost:8000/sales/:id/cancel](http://localhost:8000/sales/:id/cancel)
-    -   (Cencela uma venda)
-    -   **Exemplo de corpo em formato JSON**:
-    ```json
+-   **PATCH** [http://localhost:8000/sales/:id/cancel](http://localhost:8000/sales/:id/cancel) - (Cencela uma venda) - **Exemplo de corpo em formato JSON**:
+`json
     {
         "status": "canceled"
     }
-    ```
+    `
+</details>
 
 ## Descrição do Projeto
 
