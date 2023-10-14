@@ -119,9 +119,14 @@ Implementar um endpoint para listar todos os produtos disponíveis no estoque.
 -   **GET** [http://localhost:8000/products](http://localhost:8000/products) - (Lista todos os produtos)
 </details>
 
-### REQUISITO 3
+<details>
+<summary>REQUISITO 3</summary>
 
 Desenvolver um endpoint para obter os detalhes de um produto através do ID.
+
+-   **GET** [http://localhost:8000/products/:id](http://localhost:8000/products/:id)
+    -   (Retorna produto pelo id)
+</details>
 
 ### REQUISITO 4
 
