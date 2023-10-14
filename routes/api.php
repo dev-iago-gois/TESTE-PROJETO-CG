@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,10 +25,8 @@ Route::group(
         // "middleware" => "auth:sanctum",
     ],
     function () {
-        Route::get("/", [ProductController::class, "getAll"]);
-        // Route::apiResource("products", "ProductController");
-        // Route::apiResource("sales", "SaleController");
-        // Route::apiResource("sales.products", "SaleProductController");
+        // Route::get("/", [ProductController::class, "getAll"]);
+        Route::post("/", [ProductController::class, "create"]);
     }
 );
 
