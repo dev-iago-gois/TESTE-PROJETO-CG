@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    // Table name
+    // use HasFactory;
     protected $table = "products";
 
     protected $fillable = [
@@ -18,4 +18,10 @@ class Product extends Model
     ];
 
     // TODO add relationship
+    public function sales()
+    {
+        return $this->belongsToMany(Sale::class, 'sales_products', 'product_id', 'sale_id')
+            ->withPivot('quantity');
+    }
+
 }

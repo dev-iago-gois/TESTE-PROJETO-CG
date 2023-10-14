@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SaleProduct extends Model
+class SalesProduct extends Model
 {
     // use HasFactory;
     protected $table = "sales_products";
@@ -16,5 +16,5 @@ class SaleProduct extends Model
         "quantity",
     ];
 
-    // TODO add relationship
+    // A tabela intermediaria nao recebe relationship
 }

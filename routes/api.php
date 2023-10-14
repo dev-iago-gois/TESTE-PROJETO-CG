@@ -22,10 +22,9 @@ Route::group(
     [
         "prefix" => "products",
         // "middleware" => "auth:sanctum",
-        "namespace" => "App\Http\Controllers",
     ],
     function () {
-        // Route::get("/", "ProductController");
+        Route::get("/", [ProductController::class, "getAll"]);
         // Route::apiResource("products", "ProductController");
         // Route::apiResource("sales", "SaleController");
         // Route::apiResource("sales.products", "SaleProductController");

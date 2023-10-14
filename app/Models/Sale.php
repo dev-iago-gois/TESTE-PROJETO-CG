@@ -16,4 +16,9 @@ class Sale extends Model
     ];
 
     // TODO add relationship
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'sales_products', 'sale_id', 'product_id')
+            ->withPivot('quantity');
+    }
 }
