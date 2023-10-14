@@ -13,7 +13,7 @@ class HttpStatusMapper
             "BAD_REQUEST" => 400,
             "UNAUTHORIED" => 401,
             "NOT_FOUND" => 404,
-            "internal_server_error" => 500,
+            "INTERNAL_SERVER_ERROR" => 500,
         ];
 
         if (!array_key_exists($status, $statusCodes)) {
