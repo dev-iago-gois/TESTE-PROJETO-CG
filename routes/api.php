@@ -18,8 +18,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(
+    [
+        "prefix" => "products",
+        // "middleware" => "auth:sanctum",
+        "namespace" => "App\Http\Controllers",
+    ],
+    function () {
+        // Route::get("/", "ProductController");
+        // Route::apiResource("products", "ProductController");
+        // Route::apiResource("sales", "SaleController");
+        // Route::apiResource("sales.products", "SaleProductController");
+    }
+);
+
 Route::get("/", function () {
     return response()->json([
-        "success" => 12312312
+        "success" => 'API is working',
     ]);
 });
