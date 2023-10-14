@@ -14,14 +14,14 @@ class ProductController extends Controller
             "name" => "required|string|max:100",
             "description" => "nullable|string",
             "price" => "required|numeric",
-            "quantity" => "integer",
+            "stock" => "integer",
         ]);
 
         $product = Product::create([
             "name" => $request->name,
             "description" => $request->description,
             "price" => $request->price,
-            "quantity" => $request->quantity,
+            "stock" => $request->stock,
         ]);
 
         return response()->json([

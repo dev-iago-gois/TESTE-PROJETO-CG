@@ -6,6 +6,7 @@ class HttpStatusMapper
 {
     public static function getStatusCode(string $status): int
     {
+        // Receive a string and return the corresponding HTTP status code
         $statusCodes = [
             "SUCCESS" => 200,
             "CREATED" => 201,
