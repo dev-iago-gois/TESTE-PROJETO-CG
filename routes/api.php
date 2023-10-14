@@ -28,6 +28,7 @@ Route::group(
         // Route::get("/", [ProductController::class, "getAll"]);
         Route::post("/", [ProductController::class, "create"]);
         Route::get("/", [ProductController::class, "getAll"]);
+        Route::get("/{id}", [ProductController::class, "getById"]);
     }
 );
 

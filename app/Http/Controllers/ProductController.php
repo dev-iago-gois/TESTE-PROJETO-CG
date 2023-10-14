@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Utils\HttpStatusMapper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
     public function create(Request $request)
     {
+        // valida a raquisicao
         $request->validate([
             "name" => "required|string|max:100",
             "description" => "nullable|string",
@@ -17,6 +19,7 @@ class ProductController extends Controller
             "stock" => "integer",
         ]);
 
+        // cria o produto
         $product = Product::create([
             "name" => $request->name,
             "description" => $request->description,
@@ -24,6 +27,7 @@ class ProductController extends Controller
             "stock" => $request->stock,
         ]);
 
+        // retorna o produto criado
         return response()->json([
             "message" => "Product created successfully",
             "data" => $product,
@@ -36,8 +40,10 @@ class ProductController extends Controller
 
     public function getAll()
     {
+        // busca todos os produtos
         $products = Product::all();
 
+        // retorna os produtos
         return response()->json([
             "message" => "Products retrieved successfully",
             "data" => $products,
@@ -45,5 +51,33 @@ class ProductController extends Controller
 
         // TODO Duvida:
         // retornar o que esta no estoque > 0  ou todos os produtos?
+    }
+
+    public function getById(int $productId)
+    {
+        // valida a raquisicao
+        $validator = Validator::make(
+            ["id" => $productId],
+            ["id" => "required|integer"]
+        );
+        if ($validator->fails()) {
+            return response()->json([
+                "message" => "Bad request, invalid id",
+            ], HttpStatusMapper::getStatusCode("BAD_REQUEST"));
+        }
+
+        // busca o produto
+        $product = Product::find($productId);
+
+        if (!$product) {
+            return response()->json([
+                "message" => "Product not found",
+            ], HttpStatusMapper::getStatusCode("NOT_FOUND"));
+        }
+
+        return response()->json([
+            "message" => "Product retrieved successfully",
+            "data" => $product,
+        ], HttpStatusMapper::getStatusCode("SUCCESS"));
     }
 }
