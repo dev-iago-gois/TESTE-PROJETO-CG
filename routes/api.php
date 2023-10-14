@@ -27,6 +27,7 @@ Route::group(
     function () {
         // Route::get("/", [ProductController::class, "getAll"]);
         Route::post("/", [ProductController::class, "create"]);
+        Route::get("/", [ProductController::class, "getAll"]);
     }
 );
 
