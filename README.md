@@ -174,13 +174,28 @@ Adicionar um novo endpoint que permita realizar uma venda, onde o produto é sel
     ```
 </details>
 
-### REQUISITO 7
+<details>
+<summary>REQUISITO 7</summary>
 
-Garantir que a quantidade em estoque seja atualizada automaticamente quando novas unidades são vendidas.
+Garantir que a quantidade em estoque seja atualizada automaticamente quando novas unidades são vendidas.(complemento do requisito anterior)
 
-### REQUISITO 8
+</details>
+
+
+<details>
+<summary>REQUISITO 8</summary>
 
 Adicionar um novo endpoint que permita cancelar uma venda, onde o produto é selecionado e a quantidade vendida é registrada. Isso deve aumentar a quantidade de estoque do produto.
+
+-   **PATCH** [http://localhost:8000/sales/:id/cancel](http://localhost:8000/sales/:id/cancel)
+    - (Cencela uma venda)
+    - **Exemplo de corpo em formato JSON**:
+    ```json
+        {
+            "status": "canceled"
+        }
+    ```
+</details>
 
 ### REQUISITO 9
 
