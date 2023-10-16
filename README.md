@@ -101,14 +101,14 @@ Você pode usar o seu cliente preferido (Insomnia, Postman, ThunderClient) para 
 Criar um endpoint que permita o cadastro de um novo produto com os campos: name, description, price e stock. Nome, descrição, preço e quantidade em estoque, respectivamente.
 
 -   **POST** [http://localhost:8000/products](http://localhost:8000/products) - (Cadastra um produto) - **Exemplo de corpo da requisição em formato JSON**:
-`json
+```json
     {
         "name": "nome do produto",
         "description": "descrição do produto",
         "price": 1.99,
         "stock": 100
     }
-    `
+```
 </details>
 
 <details>
@@ -134,12 +134,25 @@ Desenvolver um endpoint para obter os detalhes de um produto através do ID.
 Criar um endpoint para atualizar as informações de um produto através do ID.
 
 -   **PATCH** [http://localhost:8000/products/:id](http://localhost:8000/products/:id)
-    -   (Atualiza um produto)
+    -   (Atualiza um produto, pode-se passar os campos completos, como no exemplo, ou apenas algumas colunas)
+```json
+    {
+        "name": "nome do produto",
+        "description": "descrição do produto",
+        "price": 1.99,
+        "stock": 100
+    }
+```
 </details>
 
-### REQUISITO 5
+<details>
+<summary>REQUISITO 5</summary>
 
 Implementar um endpoint para excluir um produto através do ID.
+
+-   **DELETE** [http://localhost:8000/products/:id](http://localhost:8000/products/:id)
+    -   (Deleta um produto)
+</details>
 
 ### REQUISITO 6
 
