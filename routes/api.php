@@ -33,6 +33,20 @@ Route::group(
     }
 );
 
+Route::group(
+    [
+        "prefix" => "sales",
+        // "middleware" => "auth:sanctum",
+    ],
+    function () {
+        // Route::post("/", [SaleController::class, "create"]);
+        // Route::get("/", [SaleController::class, "getAll"]);
+        // Route::get("/{id}", [SaleController::class, "getById"]);
+        // Route::patch("/{id}", [SaleController::class, "update"]);
+        // Route::delete("/{id}", [SaleController::class, "delete"]);
+    }
+);
+
 Route::get("/", function () {
     return response()->json([
         "success" => 'API is working',
