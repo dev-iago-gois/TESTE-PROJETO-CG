@@ -101,4 +101,16 @@ class SaleController extends Controller
             'data' => $sale,
         ], HttpStatusMapper::getStatusCode("SUCCESS"));
     }
+
+    public function getAll(): JsonResponse
+    {
+        // get all sales
+        $sales = Sale::with(['products:id,name,price,sales_products.quantity as quantity'])->get();
+        // TODO como eu tiro o pivot do retorno? so com um DTO?
+        // return all sales
+        return response()->json([
+            'message' => 'Sales retrieved successfully',
+            'data' => $sales,
+        ], HttpStatusMapper::getStatusCode("SUCCESS"));
+    }
 }

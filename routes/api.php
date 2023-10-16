@@ -42,7 +42,7 @@ Route::group(
     function () {
         Route::post("/", [SaleController::class, "create"]);
         Route::patch("/{id}/cancel", [SaleController::class, "cancel"]);
-        // Route::get("/", [SaleController::class, "getAll"]);
+        Route::get("/history", [SaleController::class, "getAll"]);
         // Route::get("/{id}", [SaleController::class, "getById"]);
         // Route::patch("/{id}", [SaleController::class, "update"]);
         // Route::delete("/{id}", [SaleController::class, "delete"]);
