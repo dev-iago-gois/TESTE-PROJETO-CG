@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SaleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -39,7 +40,7 @@ Route::group(
         // "middleware" => "auth:sanctum",
     ],
     function () {
-        // Route::post("/", [SaleController::class, "create"]);
+        Route::post("/", [SaleController::class, "create"]);
         // Route::get("/", [SaleController::class, "getAll"]);
         // Route::get("/{id}", [SaleController::class, "getById"]);
         // Route::patch("/{id}", [SaleController::class, "update"]);

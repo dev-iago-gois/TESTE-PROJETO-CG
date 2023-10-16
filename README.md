@@ -154,13 +154,29 @@ Implementar um endpoint para excluir um produto através do ID.
     -   (Deleta um produto)
 </details>
 
-### REQUISITO 6
+<details>
+<summary>REQUISITO 6</summary>
 
-Garantir que a quantidade em estoque seja atualizada automaticamente quando novas unidades são vendidas.
+Adicionar um novo endpoint que permita realizar uma venda, onde o produto é selecionado e a quantidade vendida é registrada. Isso deve reduzir a quantidade de estoque do produto.
+
+-   **POST** [http://localhost:8000/sales](http://localhost:8000/sales)
+    -   (Cria uma venda)
+    -   **Exemplo de corpo em formato JSON**:
+    ```json
+    {
+        "products": [
+        { "product_id": 1, "quantity": 5 },
+        { "product_id": 2, "quantity": 3 },
+        // Outros produtos
+    ]
+    }
+
+    ```
+</details>
 
 ### REQUISITO 7
 
-Adicionar um novo endpoint que permita realizar uma venda, onde o produto é selecionado e a quantidade vendida é registrada. Isso deve reduzir a quantidade de estoque do produto.
+Garantir que a quantidade em estoque seja atualizada automaticamente quando novas unidades são vendidas.
 
 ### REQUISITO 8
 

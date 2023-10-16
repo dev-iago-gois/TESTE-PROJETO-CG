@@ -17,11 +17,10 @@ class Product extends Model
         "stock",
     ];
 
-    // TODO add relationship
     public function sales()
     {
         return $this->belongsToMany(Sale::class, 'sales_products', 'product_id', 'sale_id')
-            ->withPivot('stock');
+            ->withPivot('quantity');
     }
 
 }
