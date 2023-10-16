@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Utils\HttpStatusMapper;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
-    public function create(Request $request)
+    public function create(Request $request): JsonResponse
     {
         // dd($request->all());
         // validate incoming request
@@ -58,5 +59,46 @@ class SaleController extends Controller
             'message' => 'Sale created successfully',
             'data' => $sale,
         ], HttpStatusMapper::getStatusCode("CREATED"));
+    }
+
+    public function cancel(int $saleId): JsonResponse
+    {
+        // get sale by id
+        $sale = Sale::find($saleId);
+        // dd($sale);
+        // if sale does not exist return error message
+        if(!$sale) {
+            return response()->json([
+                'message' => "Sale ID {$saleId} not found",
+            ], HttpStatusMapper::getStatusCode("NOT_FOUND"));
+        }
+        // if sale status is not pending return error message
+        if($sale->status != 'pending') {
+            return response()->json([
+                'message' => "Sale ID {$saleId} cannot be canceled",
+            ], HttpStatusMapper::getStatusCode("BAD_REQUEST"));
+        }
+        // get products from sale
+        $products = $sale->products;
+        // dd($products);
+        // foreach product in sale
+        foreach ($products as $product) {
+            // get product in DB by id
+            // $productDB = Product::find($product->id);
+            $productInSale = $sale->products->find($product->id);
+            $quantitySold = $productInSale->pivot->quantity;
+            // dd($product->stock);
+            // add stock to product
+            $product->stock += $quantitySold;
+            // save product
+            $product->save();
+        }
+        // update sale status to canceled
+        $sale->update(['status' => 'canceled']);
+        // return updated sale
+        return response()->json([
+            'message' => "Sale ID {$saleId} canceled successfully",
+            'data' => $sale,
+        ], HttpStatusMapper::getStatusCode("SUCCESS"));
     }
 }
