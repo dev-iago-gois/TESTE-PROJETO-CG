@@ -25,10 +25,11 @@ Route::group(
         // "middleware" => "auth:sanctum",
     ],
     function () {
-        // Route::get("/", [ProductController::class, "getAll"]);
         Route::post("/", [ProductController::class, "create"]);
         Route::get("/", [ProductController::class, "getAll"]);
         Route::get("/{id}", [ProductController::class, "getById"]);
+        Route::patch("/{id}", [ProductController::class, "update"]);
+        Route::delete("/{id}", [ProductController::class, "delete"]);
     }
 );
 

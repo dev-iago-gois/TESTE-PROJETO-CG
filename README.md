@@ -128,9 +128,14 @@ Desenvolver um endpoint para obter os detalhes de um produto através do ID.
     -   (Retorna produto pelo id)
 </details>
 
-### REQUISITO 4
+<details>
+<summary>REQUISITO 4</summary>
 
 Criar um endpoint para atualizar as informações de um produto através do ID.
+
+-   **PATCH** [http://localhost:8000/products/:id](http://localhost:8000/products/:id)
+    -   (Atualiza um produto)
+</details>
 
 ### REQUISITO 5
 
