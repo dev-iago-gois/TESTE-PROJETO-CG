@@ -95,25 +95,64 @@ Você pode usar o seu cliente preferido (Insomnia, Postman, ThunderClient) para 
 <details>
 <summary>Clique para exibir os Requisitos do Projeto</summary>
 
-### REQUISITO 1
+<details>
+<summary>REQUISITO 1</summary>
 
 Criar um endpoint que permita o cadastro de um novo produto com os campos: name, description, price e stock. Nome, descrição, preço e quantidade em estoque, respectivamente.
 
-### REQUISITO 2
+-   **POST** [http://localhost:8000/products](http://localhost:8000/products) - (Cadastra um produto) - **Exemplo de corpo da requisição em formato JSON**:
+```json
+    {
+        "name": "nome do produto",
+        "description": "descrição do produto",
+        "price": 1.99,
+        "stock": 100
+    }
+```
+</details>
+
+<details>
+<summary>REQUISITO 2</summary>
 
 Implementar um endpoint para listar todos os produtos disponíveis no estoque.
 
-### REQUISITO 3
+-   **GET** [http://localhost:8000/products](http://localhost:8000/products) - (Lista todos os produtos)
+</details>
+
+<details>
+<summary>REQUISITO 3</summary>
 
 Desenvolver um endpoint para obter os detalhes de um produto através do ID.
 
-### REQUISITO 4
+-   **GET** [http://localhost:8000/products/:id](http://localhost:8000/products/:id)
+    -   (Retorna produto pelo id)
+</details>
+
+<details>
+<summary>REQUISITO 4</summary>
 
 Criar um endpoint para atualizar as informações de um produto através do ID.
 
-### REQUISITO 5
+-   **PATCH** [http://localhost:8000/products/:id](http://localhost:8000/products/:id)
+    -   (Atualiza um produto, pode-se passar os campos completos, como no exemplo, ou apenas algumas colunas)
+```json
+    {
+        "name": "nome do produto",
+        "description": "descrição do produto",
+        "price": 1.99,
+        "stock": 100
+    }
+```
+</details>
+
+<details>
+<summary>REQUISITO 5</summary>
 
 Implementar um endpoint para excluir um produto através do ID.
+
+-   **DELETE** [http://localhost:8000/products/:id](http://localhost:8000/products/:id)
+    -   (Deleta um produto)
+</details>
 
 ### REQUISITO 6
 

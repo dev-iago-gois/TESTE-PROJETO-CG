@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,8 +19,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(
+    [
+        "prefix" => "products",
+        // "middleware" => "auth:sanctum",
+    ],
+    function () {
+        Route::post("/", [ProductController::class, "create"]);
+        Route::get("/", [ProductController::class, "getAll"]);
+        Route::get("/{id}", [ProductController::class, "getById"]);
+        Route::patch("/{id}", [ProductController::class, "update"]);
+        Route::delete("/{id}", [ProductController::class, "delete"]);
+    }
+);
+
 Route::get("/", function () {
     return response()->json([
-        "success" => 12312312
+        "success" => 'API is working',
     ]);
 });
