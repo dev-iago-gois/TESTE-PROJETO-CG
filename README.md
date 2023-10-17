@@ -234,3 +234,11 @@ Criar um endpoint para listar o histórico de vendas, incluindo informações so
 
 Este projeto está licenciado sob a [Licença Universal CC0 1.0](LICENSE.md) da Creative Commons
 consulte o arquivo [LICENSE.md](LICENSE.md) para mais detalhes.
+
+
+TODO:
+- Aplicar DB transaction
+- Repository
+- try catch
+- refatorar o codigo e substituir os status code pelo do laravel ex: Response::HTTP_BAD_REQUEST
+use Illuminate\Http\Response;
