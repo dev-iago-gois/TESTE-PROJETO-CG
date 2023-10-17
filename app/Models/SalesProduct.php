@@ -16,5 +16,4 @@ class SalesProduct extends Model
         "quantity",
     ];
 
-    // A tabela intermediaria nao recebe relationship
 }

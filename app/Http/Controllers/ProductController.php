@@ -2,38 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateProductRequest;
 use App\Models\Product;
 use App\Utils\HttpStatusMapper;
-use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
-    public function create(Request $request): JsonResponse
+    public function create(CreateProductRequest $request): JsonResponse
     {
-        // valida a raquisicao
-        $request->validate([
-            "name" => "required|string|max:100",
-            "description" => "nullable|string",
-            "price" => "required|numeric",
-            "stock" => "integer",
-        ]);
+        $data = $request->validated();
+        $product = Product::create($data);
 
-        // cria o produto
-        $product = Product::create([
-            "name" => $request->name,
-            "description" => $request->description,
-            "price" => $request->price,
-            "stock" => $request->stock,
-        ]);
-
-        // retorna o produto criado
         return response()->json([
             "message" => "Product created successfully",
             "data" => $product,
-        ], HttpStatusMapper::getStatusCode("CREATED"));
+        ], Response::HTTP_CREATED);
     }
 
     public function getAll(): JsonResponse
