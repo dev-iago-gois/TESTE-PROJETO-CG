@@ -34,10 +34,6 @@ class ProductController extends Controller
             "message" => "Product created successfully",
             "data" => $product,
         ], HttpStatusMapper::getStatusCode("CREATED"));
-
-        // TODO Duvida:
-        // com eu acesso a mensagem de erro pra criar ifs no meio para um
-        // produto que ja foi cadastrado anteriormente por exemplo?
     }
 
     public function getAll(): JsonResponse
@@ -50,9 +46,6 @@ class ProductController extends Controller
             "message" => "Products retrieved successfully",
             "data" => $products,
         ], HttpStatusMapper::getStatusCode("SUCCESS"));
-
-        // TODO Duvida:
-        // retornar o que esta no estoque > 0  ou todos os produtos?
     }
 
     public function getById(int $productId): JsonResponse
@@ -62,9 +55,7 @@ class ProductController extends Controller
             ["id" => $productId],
             ["id" => "required|integer"]
         );
-        // TODO Duvida:
-        // como eu acesso a mensagem de erro pra criar ifs no meio para um
-        // produto que ja foi cadastrado anteriormente por exemplo?
+
         if ($validator->fails()) {
             return response()->json([
                 "message" => "Bad request, invalid id",
