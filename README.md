@@ -237,8 +237,8 @@ consulte o arquivo [LICENSE.md](LICENSE.md) para mais detalhes.
 
 
 TODO:
-- Aplicar DB transaction
-- Repository
-- try catch
+- Aplicar conceito de Repository
+- Aplicar conceito de DB transaction
+- Applicar try catch
 - refatorar o codigo e substituir os status code pelo do laravel ex: Response::HTTP_BAD_REQUEST
 use Illuminate\Http\Response;
