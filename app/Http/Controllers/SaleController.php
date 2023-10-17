@@ -102,6 +102,58 @@ class SaleController extends Controller
         ], HttpStatusMapper::getStatusCode("SUCCESS"));
     }
 
+    public function update(int $saleId, Request $request): JsonResponse
+    {
+        // validate incoming request
+        $request->validate([
+            'products' => 'required|array',
+            'products.*.product_id' => 'required|integer|exists:products,id',
+            'products.*.quantity' => 'required|integer|min:1',
+        ]);
+
+        // get sale by id
+        $sale = Sale::find($saleId);
+        // dd($sale);
+        // if sale does not exist return error message
+        if(!$sale) {
+            return response()->json([
+                'message' => "Sale ID {$saleId} not found",
+            ], HttpStatusMapper::getStatusCode("NOT_FOUND"));
+        }
+        // if sale status is not pending return error message
+        if($sale->status != 'pending') {
+            return response()->json([
+                'message' => "Sale ID {$saleId} cannot be updated",
+            ], HttpStatusMapper::getStatusCode("BAD_REQUEST"));
+        }
+        // get products from sale
+        $products = $request->input('products');
+        // dd($products);
+        // foreach product in sale
+        foreach ($products as $productItem) {
+            // get product in DB by id
+            $productDB = Product::find($productItem->id);
+            // if product does not exist return error message
+            if(!$productDB) {
+                return response()->json([
+                    'message' => "Product ID {$productItem->id} not found",
+                ], HttpStatusMapper::getStatusCode("NOT_FOUND"));
+            }
+            // check if it has enough stock
+            if($productDB->stock < $productItem->quantity) {
+                return response()->json([
+                    'message' => "Product {$productDB->name} is out of stock",
+                ], HttpStatusMapper::getStatusCode("BAD_REQUEST"));
+            }
+            // add stock to product
+            $productDB->stock -= $productItem->quantity;
+            // save product
+            $productDB->save();
+            // update product quantity in sale
+            $sale->products()->updateExistingPivot($productDB->id, ['quantity' => $productItem->quantity]);
+        }
+    }
+
     public function getAll(): JsonResponse
     {
         // get all sales

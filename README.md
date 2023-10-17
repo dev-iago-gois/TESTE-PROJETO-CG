@@ -197,13 +197,31 @@ Adicionar um novo endpoint que permita cancelar uma venda, onde o produto é sel
     ```
 </details>
 
-### REQUISITO 9
+<details>
+<summary>REQUISITO 9</summary>
 
 Adicionar um novo endpoint que permita editar uma venda, onde o produto é selecionado e a quantidade vendida é registrada. Isso deve reduzir ou aumentar a quantidade em estoque do produto dependendo da edição.
 
-### REQUISITO 10
+-   **PATCH** [http://localhost:8000/sales/:id](http://localhost:8000/sales/:id)
+    -   (Atualiza uma venda)
+    -   **Exemplo de corpo em formato JSON**:
+    ```json
+        {
+            "product_id": 1,
+            "quantity": 5
+        }
+    ```
+</details>
+
+<details>
+<summary>REQUISITO 10</summary>
 
 Criar um endpoint para listar o histórico de vendas, incluindo informações sobre os produtos vendidos, quantidades e data da venda.
+
+-   **GET** [http://localhost:8000/sales/history](http://localhost:8000/sales/history)
+    -   (Histórico de Vendas)
+
+</details>
 
 </details>
 
