@@ -154,25 +154,74 @@ Implementar um endpoint para excluir um produto através do ID.
     -   (Deleta um produto)
 </details>
 
-### REQUISITO 6
-
-Garantir que a quantidade em estoque seja atualizada automaticamente quando novas unidades são vendidas.
-
-### REQUISITO 7
+<details>
+<summary>REQUISITO 6</summary>
 
 Adicionar um novo endpoint que permita realizar uma venda, onde o produto é selecionado e a quantidade vendida é registrada. Isso deve reduzir a quantidade de estoque do produto.
 
-### REQUISITO 8
+-   **POST** [http://localhost:8000/sales](http://localhost:8000/sales)
+    -   (Cria uma venda)
+    -   **Exemplo de corpo em formato JSON**:
+    ```json
+    {
+        "products": [
+        { "product_id": 1, "quantity": 5 },
+        { "product_id": 2, "quantity": 3 },
+        // Outros produtos
+    ]
+    }
+
+    ```
+</details>
+
+<details>
+<summary>REQUISITO 7</summary>
+
+Garantir que a quantidade em estoque seja atualizada automaticamente quando novas unidades são vendidas.(complemento do requisito anterior)
+
+</details>
+
+
+<details>
+<summary>REQUISITO 8</summary>
 
 Adicionar um novo endpoint que permita cancelar uma venda, onde o produto é selecionado e a quantidade vendida é registrada. Isso deve aumentar a quantidade de estoque do produto.
 
-### REQUISITO 9
+-   **PATCH** [http://localhost:8000/sales/:id/cancel](http://localhost:8000/sales/:id/cancel)
+    - (Cencela uma venda)
+    - **Exemplo de corpo em formato JSON**:
+    ```json
+        {
+            "status": "canceled"
+        }
+    ```
+</details>
+
+<details>
+<summary>REQUISITO 9</summary>
 
 Adicionar um novo endpoint que permita editar uma venda, onde o produto é selecionado e a quantidade vendida é registrada. Isso deve reduzir ou aumentar a quantidade em estoque do produto dependendo da edição.
 
-### REQUISITO 10
+-   **PATCH** [http://localhost:8000/sales/:id](http://localhost:8000/sales/:id)
+    -   (Atualiza uma venda)
+    -   **Exemplo de corpo em formato JSON**:
+    ```json
+        {
+            "product_id": 1,
+            "quantity": 5
+        }
+    ```
+</details>
+
+<details>
+<summary>REQUISITO 10</summary>
 
 Criar um endpoint para listar o histórico de vendas, incluindo informações sobre os produtos vendidos, quantidades e data da venda.
+
+-   **GET** [http://localhost:8000/sales/history](http://localhost:8000/sales/history)
+    -   (Histórico de Vendas)
+
+</details>
 
 </details>
 
@@ -185,3 +234,11 @@ Criar um endpoint para listar o histórico de vendas, incluindo informações so
 
 Este projeto está licenciado sob a [Licença Universal CC0 1.0](LICENSE.md) da Creative Commons
 consulte o arquivo [LICENSE.md](LICENSE.md) para mais detalhes.
+
+
+TODO:
+- Aplicar DB transaction
+- Repository
+- try catch
+- refatorar o codigo e substituir os status code pelo do laravel ex: Response::HTTP_BAD_REQUEST
+use Illuminate\Http\Response;
