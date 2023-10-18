@@ -25,6 +25,11 @@ class ProductController extends Controller
 
             DB::commit();
 
+            return response()->json([
+                "message" => "Product created successfully",
+                "data" => $product,
+            ], Response::HTTP_CREATED);
+
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -39,47 +44,82 @@ class ProductController extends Controller
 
     public function getAll(): JsonResponse
     {
-        $products = Product::all();
+        try {
 
-        return response()->json([
-            "message" => "Products retrieved successfully",
-            "data" => $products,
-        ], Response::HTTP_OK);
+            $products = Product::all();
+
+            return response()->json([
+                "message" => "Products retrieved successfully",
+                "data" => $products,
+            ], Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                "message" => "Products retrieval failed",
+                "error" => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function getById(int $productId): JsonResponse
     {
-        $product = Product::find($productId);
+        try {
 
-        if (!$product) {
+            $product = Product::find($productId);
+
+            if (!$product) {
+                return response()->json([
+                    'message' => 'Product not found',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
             return response()->json([
-                "message" => "Product not found",
-            ], Response::HTTP_NOT_FOUND);
-        }
+                "message" => "Product retrieved successfully",
+                "data" => $product,
+            ], Response::HTTP_OK);
 
-        return response()->json([
-            "message" => "Product retrieved successfully",
-            "data" => $product,
-        ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+                return response()->json([
+                    "message" => "Product retrieval failed",
+                    "error" => $e->getMessage(),
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function update(int $productId, UpdateProductRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        $product = Product::find($productId);
+        DB::beginTransaction();
 
-        if (!$product) {
+        try {
+
+            $data = $request->validated();
+            $product = Product::find($productId);
+
+            if (!$product) {
+                return response()->json([
+                    'message' => 'Product not found',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            $product->update($data);
+
+            DB::commit();
+
             return response()->json([
-                'message' => 'Product not found',
-            ], Response::HTTP_NOT_FOUND);
+                "message" => "Product updated successfully",
+                "data" => $product,
+            ], Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                "message" => "Product update failed",
+                "error" => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $product->update($data);
-
-        return response()->json([
-            "message" => "Product updated successfully",
-            "data" => $product,
-        ], Response::HTTP_OK);
     }
 
     public function delete(int $productId): JsonResponse
