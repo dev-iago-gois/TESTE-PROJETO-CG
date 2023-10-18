@@ -50,29 +50,31 @@ class SaleController extends Controller
 
         try {
 
-            $sale = $this->saleRepository->getById($saleId);
+            $serviceResponse = $this->saleService->cancel($saleId);
 
-            // TODO pode virar uma funcao de check status
-            if($sale->status != 'pending') {
-                throw new \Exception("Sale ID {$saleId} cannot be canceled");
-                // return response()->json([
-                //     'message' => "Sale ID {$saleId} cannot be canceled",
-                // ], Response::HTTP_BAD_REQUEST);
-            }
+            // $sale = $this->saleRepository->getById($saleId);
 
-            foreach ($sale->products as $productItem) {
+            // // TODO pode virar uma funcao de check status
+            // if($sale->status != 'pending') {
+            //     throw new \Exception("Sale ID {$saleId} cannot be canceled");
+            //     // return response()->json([
+            //     //     'message' => "Sale ID {$saleId} cannot be canceled",
+            //     // ], Response::HTTP_BAD_REQUEST);
+            // }
 
-                $quantitySold = $productItem->pivot->quantity;
-                $this->productRepository->updateStock($productItem, $quantitySold);
+            // foreach ($sale->products as $productItem) {
 
-            }
-            $this->saleRepository->update($sale, 'status', 'canceled');
+            //     $quantitySold = $productItem->pivot->quantity;
+            //     $this->productRepository->updateStock($productItem, $quantitySold);
+
+            // }
+            // $this->saleRepository->update($sale, 'status', 'canceled');
 
             DB::commit();
 
             return response()->json([
                 'message' => "Sale ID {$saleId} canceled successfully",
-                'data' => $sale,
+                'data' => $serviceResponse->sale,
             ], Response::HTTP_OK);
 
         } catch (\Exception $e) {

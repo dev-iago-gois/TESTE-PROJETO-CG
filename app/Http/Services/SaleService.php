@@ -34,8 +34,27 @@ class SaleService
 
         return (object)["id" => $sale->id];
     }
-    public function cancel(array $data): void
+    public function cancel(int $saleId): object
     {
+        $sale = $this->saleRepository->getById($saleId);
+
+        // TODO pode virar uma funcao de check status
+        if($sale->status != 'pending') {
+            throw new \Exception("Sale ID {$saleId} cannot be canceled");
+            // return response()->json([
+            //     'message' => "Sale ID {$saleId} cannot be canceled",
+            // ], Response::HTTP_BAD_REQUEST);
+        }
+
+        foreach ($sale->products as $productItem) {
+
+            $quantitySold = $productItem->pivot->quantity;
+            $this->productRepository->updateStock($productItem, $quantitySold);
+
+        }
+        $this->saleRepository->update($sale, 'status', 'canceled');
+
+        return (object)["sale" => $sale];
     }
     public function update(array $data): void
     {
