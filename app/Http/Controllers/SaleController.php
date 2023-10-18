@@ -9,48 +9,67 @@ use App\Utils\HttpStatusMapper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class SaleController extends Controller
 {
     public function create(CreateSaleRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        $sale = Sale::create([
-            'customer_name' => $data["customer_name"]
-        ]);
-        dd($sale);
-        // get products array
-        $productsRequestData = $request->input('products');
-        // aqui faz um for por cada produto dentro do array productsRequestData definido acima
-        foreach ($productsRequestData as $productItem) {
-            // get product in DB by id
-            $product = Product::find($productItem['product_id']);
-            // if product exists
-            if($product) {
-                // check if it has enough stock
-                if($product->stock < $productItem['quantity']) {
-                    return response()->json([
-                        'message' => "Product {$product->name} is out of stock",
-                    ], HttpStatusMapper::getStatusCode("BAD_REQUEST"));
-                }
-                $product->stock -= $productItem['quantity'];
-                $product->save();
-            }
-            // if product does not exist return error message
-            if(!$product) {
-                return response()->json([
-                    'message' => "Product ID {$productItem['product_id']} not found",
-                ], HttpStatusMapper::getStatusCode("NOT_FOUND"));
-            }
-            // attach product to sale, this create the link in sales_products table
-            $sale->products()->attach($product->id, ['quantity' => $productItem['quantity']]);
-        }
 
-        // return created sale
-        return response()->json([
-            'message' => 'Sale created successfully',
-            'data' => $sale,
-        ], HttpStatusMapper::getStatusCode("CREATED"));
+        DB::beginTransaction();
+
+        try {
+
+            $data = $request->validated();
+            $sale = Sale::create([
+                'customer_name' => $data["customer_name"]
+            ]);
+
+            foreach ($data['products'] as $productItem) {
+
+                $product = Product::find($productItem['product_id']);
+
+                if(!$product) {
+                    return response()->json([
+                        'message' => "Product ID {$productItem['product_id']} not found",
+                    ], HttpStatusMapper::getStatusCode("NOT_FOUND"));
+                }
+
+                if($product) {
+                    // TODO pode virar uma funcao de check stock
+                    if($product->stock < $productItem['quantity']) {
+                        return response()->json([
+                            'message' => "Product {$product->name} is out of stock",
+                        ], Response::HTTP_BAD_REQUEST);
+                    }
+
+                    $product->stock -= $productItem['quantity'];
+                    $product->save();
+                }
+
+                $sale->products()->attach(
+                    $product->id,
+                    ['quantity' => $productItem['quantity']]
+                );
+            }
+
+            DB::commit();
+
+            return response()->json([
+                "message" => "Sale created successfully",
+                "data" => $sale,
+            ], Response::HTTP_CREATED);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                "message" => "Sale creation failed",
+                "error" => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+
+        }
     }
 
     public function cancel(int $saleId): JsonResponse
