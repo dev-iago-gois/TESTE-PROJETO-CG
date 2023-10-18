@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Repositories\
-{
-    ProductsRepository,
-    SalesRepository
-};
-use App\Http\Requests\CreateSaleRequest;
-use App\Http\Requests\UpdateSaleRequest;
+use App\Http\Repositories\{ProductsRepository, SalesRepository};
+use App\Http\Requests\{CreateSaleRequest, UpdateSaleRequest};
+use App\Http\Services\SaleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +13,8 @@ class SaleController extends Controller
 {
     public function __construct(
         private SalesRepository $saleRepository,
-        private ProductsRepository $productRepository
+        private ProductsRepository $productRepository,
+        private SaleService $saleService
     ) {}
     public function create(CreateSaleRequest $request): JsonResponse
     {
@@ -27,29 +24,12 @@ class SaleController extends Controller
         try {
 
             $data = $request->validated();
-            $sale = $this->saleRepository->create($data['customer_name']);
-
-            foreach ($data['products'] as $productItem) {
-
-                $product = $this->productRepository->getById($productItem['product_id']);
-
-                // TODO pode virar uma funcao de check stock
-                if($product->stock < $productItem['quantity']) {
-                    throw new \Exception("Product {$product->name} is out of stock");
-                    // return response()->json([
-                    //     'message' => "Product {$product->name} is out of stock",
-                    // ], Response::HTTP_BAD_REQUEST);
-                }
-
-                $this->productRepository->updateStock($product, -$productItem['quantity']);
-
-                $this->saleRepository->attachProductToSale($sale, $product, $productItem['quantity']);
-            }
+            $serviceResponse = $this->saleService->create($data);
 
             DB::commit();
 
             return response()->json([
-                "message" => "Sale {$sale->id} created successfully",
+                "message" => "Sale {$serviceResponse->id} created successfully",
             ], Response::HTTP_CREATED);
 
         } catch (\Exception $e) {
