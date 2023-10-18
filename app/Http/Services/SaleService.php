@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Http\Repositories\{ProductsRepository, SalesRepository};
+use App\Http\Utils\StatusChecker;
 
 class SaleService
 {
@@ -39,12 +40,7 @@ class SaleService
         $sale = $this->saleRepository->getById($saleId);
 
         // TODO pode virar uma funcao de check status
-        if($sale->status != 'pending') {
-            throw new \Exception("Sale ID {$saleId} cannot be canceled");
-            // return response()->json([
-            //     'message' => "Sale ID {$saleId} cannot be canceled",
-            // ], Response::HTTP_BAD_REQUEST);
-        }
+        StatusChecker::checkStatus($saleId, $sale->status);
 
         foreach ($sale->products as $productItem) {
 
@@ -56,7 +52,32 @@ class SaleService
 
         return (object)["sale" => $sale];
     }
-    public function update(array $data): void
+    public function update(int $saleId, array $data): object
     {
+        $sale = $this->saleRepository->getById($saleId);
+
+        StatusChecker::checkStatus($saleId, $sale->status);
+
+        foreach ($data['products'] as $productItem) {
+            $productDB = $this->productRepository->getById($productItem['product_id']);
+
+            $previousQuantity = $sale->products->find($productItem['product_id'])->pivot->quantity;
+            $newQuantity = $productItem['quantity'];
+
+            $this->productRepository->updateStock($productDB, $previousQuantity);
+
+            if($productDB->stock < $newQuantity) {
+                throw new \Exception("Product {$productDB->name} is out of stock");
+                // return response()->json([
+                //     'message' => "Product {$productDB->name} is out of stock",
+                // ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $this->productRepository->updateStock($productDB, -$newQuantity);
+
+            $this->saleRepository->updatePivot($sale, $productItem['product_id'], $newQuantity);
+
+        }
+        return (object)["sale" => $sale];
     }
 }

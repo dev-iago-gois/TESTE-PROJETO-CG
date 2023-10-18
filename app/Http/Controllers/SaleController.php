@@ -52,24 +52,6 @@ class SaleController extends Controller
 
             $serviceResponse = $this->saleService->cancel($saleId);
 
-            // $sale = $this->saleRepository->getById($saleId);
-
-            // // TODO pode virar uma funcao de check status
-            // if($sale->status != 'pending') {
-            //     throw new \Exception("Sale ID {$saleId} cannot be canceled");
-            //     // return response()->json([
-            //     //     'message' => "Sale ID {$saleId} cannot be canceled",
-            //     // ], Response::HTTP_BAD_REQUEST);
-            // }
-
-            // foreach ($sale->products as $productItem) {
-
-            //     $quantitySold = $productItem->pivot->quantity;
-            //     $this->productRepository->updateStock($productItem, $quantitySold);
-
-            // }
-            // $this->saleRepository->update($sale, 'status', 'canceled');
-
             DB::commit();
 
             return response()->json([
@@ -95,42 +77,13 @@ class SaleController extends Controller
         try {
 
             $data = $request->validated();
-            $sale = $this->saleRepository->getById($saleId);
-
-            // TODO pode virar uma funcao de check status
-            if($sale->status != 'pending') {
-                throw new \Exception("Sale ID {$saleId} cannot be updated");
-                // return response()->json([
-                //     'message' => "Sale ID {$saleId} cannot be updated",
-                // ], Response::HTTP_BAD_REQUEST);
-            }
-
-            foreach ($data['products'] as $productItem) {
-                $productDB = $this->productRepository->getById($productItem['product_id']);
-
-                $previousQuantity = $sale->products->find($productItem['product_id'])->pivot->quantity;
-                $newQuantity = $productItem['quantity'];
-
-                $this->productRepository->updateStock($productDB, $previousQuantity);
-
-                if($productDB->stock < $newQuantity) {
-                    throw new \Exception("Product {$productDB->name} is out of stock");
-                    // return response()->json([
-                    //     'message' => "Product {$productDB->name} is out of stock",
-                    // ], Response::HTTP_BAD_REQUEST);
-                }
-
-                $this->productRepository->updateStock($productDB, -$newQuantity);
-
-                $this->saleRepository->updatePivot($sale, $productItem['product_id'], $newQuantity);
-
-            }
+            $serviceResponse = $this->saleService->update($saleId, $data);
 
             DB::commit();
 
             return response()->json([
                 "message" => "Sale ID {$saleId} updated successfully",
-                "data" => $sale,
+                "data" => $serviceResponse->sale,
             ], Response::HTTP_OK);
 
         } catch (\Exception $e) {
