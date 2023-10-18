@@ -35,9 +35,10 @@ class SaleController extends Controller
 
                 // TODO pode virar uma funcao de check stock
                 if($product->stock < $productItem['quantity']) {
-                    return response()->json([
-                        'message' => "Product {$product->name} is out of stock",
-                    ], Response::HTTP_BAD_REQUEST);
+                    throw new \Exception("Product {$product->name} is out of stock");
+                    // return response()->json([
+                    //     'message' => "Product {$product->name} is out of stock",
+                    // ], Response::HTTP_BAD_REQUEST);
                 }
 
                 $this->productRepository->updateStock($product, -$productItem['quantity']);
@@ -73,9 +74,10 @@ class SaleController extends Controller
 
             // TODO pode virar uma funcao de check status
             if($sale->status != 'pending') {
-                return response()->json([
-                    'message' => "Sale ID {$saleId} cannot be canceled",
-                ], Response::HTTP_BAD_REQUEST);
+                throw new \Exception("Sale ID {$saleId} cannot be canceled");
+                // return response()->json([
+                //     'message' => "Sale ID {$saleId} cannot be canceled",
+                // ], Response::HTTP_BAD_REQUEST);
             }
 
             foreach ($sale->products as $productItem) {
@@ -115,9 +117,10 @@ class SaleController extends Controller
 
             // TODO pode virar uma funcao de check status
             if($sale->status != 'pending') {
-                return response()->json([
-                    'message' => "Sale ID {$saleId} cannot be updated",
-                ], Response::HTTP_BAD_REQUEST);
+                throw new \Exception("Sale ID {$saleId} cannot be updated");
+                // return response()->json([
+                //     'message' => "Sale ID {$saleId} cannot be updated",
+                // ], Response::HTTP_BAD_REQUEST);
             }
 
             foreach ($data['products'] as $productItem) {
@@ -129,9 +132,10 @@ class SaleController extends Controller
                 $this->productRepository->updateStock($productDB, $previousQuantity);
 
                 if($productDB->stock < $newQuantity) {
-                    return response()->json([
-                        'message' => "Product {$productDB->name} is out of stock",
-                    ], Response::HTTP_BAD_REQUEST);
+                    throw new \Exception("Product {$productDB->name} is out of stock");
+                    // return response()->json([
+                    //     'message' => "Product {$productDB->name} is out of stock",
+                    // ], Response::HTTP_BAD_REQUEST);
                 }
 
                 $this->productRepository->updateStock($productDB, -$newQuantity);
