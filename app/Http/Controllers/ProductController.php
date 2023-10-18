@@ -124,18 +124,35 @@ class ProductController extends Controller
 
     public function delete(int $productId): JsonResponse
     {
-        $product = Product::find($productId);
 
-        if (!$product) {
+        DB::beginTransaction();
+
+        try {
+
+            $product = Product::find($productId);
+
+            if (!$product) {
+                return response()->json([
+                    'message' => 'Product not found',
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            $product->delete();
+
+            DB::commit();
+
             return response()->json([
-                'message' => 'Product not found',
-            ], Response::HTTP_NOT_FOUND);
+                "message" => "Product {$product->name} deleted successfully",
+            ], Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                "message" => "Product deletion failed",
+                "error" => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $product->delete();
-
-        return response()->json([
-            "message" => "Product {$product->name} deleted successfully",
-        ], Response::HTTP_OK);
     }
 }
