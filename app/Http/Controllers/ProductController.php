@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Repositories\ProductsRepository;
 use App\Http\Requests\CreateProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;

@@ -23,16 +23,24 @@ class SalesRepository
                 ['quantity' => $quantity]
             );
         }
-        public function getAll()
+        public function history(): array
         {
-
+            return $this->model->with('products')->get()->toArray();
         }
-        public function getById()
+        public function getById( int $id): Sale
         {
-
+            return $this->model->findOrFail($id);
         }
-        public function update()
-        {
 
+        public function update(Sale $sale, string $column, $value): void
+        {
+            $sale->update([$column => $value]);
+        }
+        public function updatePivot(Sale $sale, int $productId, int $quantity): void
+        {
+            $sale->products()->updateExistingPivot(
+                $productId,
+                ['quantity' => $quantity]
+            );
         }
 }

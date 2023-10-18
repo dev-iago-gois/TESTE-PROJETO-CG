@@ -9,29 +9,28 @@ class ProductsRepository
     public function __construct(
         protected Product $model
     ) {}
-    public function create(array $data)
+    public function create(array $data): Product
     {
         return $this->model->create($data);
     }
-    public function getAll()
+    public function getAll(): array
     {
-        return $this->model->all();
+        return $this->model->all()->toArray();
     }
-    public function getById(int $id)
+    public function getById(int $id): Product
     {
         return $this->model->findOrFail($id);
     }
-    public function update(int $id, array $data)
+    public function update(int $id, array $data): Product
     {
         $product = $this->model->findOrFail($id);
         $product->update($data);
         return $product;
     }
-    public function updateStock(Product $product, int $quantity)
+    public function updateStock(Product $product, int $quantity): void
     {
         $product->stock += $quantity;
         $product->save();
-        return $product->stock;
     }
     public function delete(int $id): void
     {

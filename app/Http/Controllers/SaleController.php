@@ -9,8 +9,6 @@ use App\Http\Repositories\
 };
 use App\Http\Requests\CreateSaleRequest;
 use App\Http\Requests\UpdateSaleRequest;
-use App\Models\Product;
-use App\Models\Sale;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -71,14 +69,9 @@ class SaleController extends Controller
 
         try {
 
-            $sale = Sale::find($saleId);
+            $sale = $this->saleRepository->getById($saleId);
 
-            if(!$sale) {
-                return response()->json([
-                    'message' => "Sale ID {$saleId} not found",
-                ], Response::HTTP_NOT_FOUND);
-            }
-
+            // TODO pode virar uma funcao de check status
             if($sale->status != 'pending') {
                 return response()->json([
                     'message' => "Sale ID {$saleId} cannot be canceled",
@@ -88,12 +81,10 @@ class SaleController extends Controller
             foreach ($sale->products as $productItem) {
 
                 $quantitySold = $productItem->pivot->quantity;
-                $productItem->stock += $quantitySold;
+                $this->productRepository->updateStock($productItem, $quantitySold);
 
-                $productItem->save();
             }
-
-            $sale->update(['status' => 'canceled']);
+            $this->saleRepository->update($sale, 'status', 'canceled');
 
             DB::commit();
 
@@ -120,14 +111,9 @@ class SaleController extends Controller
         try {
 
             $data = $request->validated();
-            $sale = Sale::find($saleId);
+            $sale = $this->saleRepository->getById($saleId);
 
-            if(!$sale) {
-                return response()->json([
-                    'message' => "Sale ID {$saleId} not found",
-                ], Response::HTTP_NOT_FOUND);
-            }
-
+            // TODO pode virar uma funcao de check status
             if($sale->status != 'pending') {
                 return response()->json([
                     'message' => "Sale ID {$saleId} cannot be updated",
@@ -135,17 +121,12 @@ class SaleController extends Controller
             }
 
             foreach ($data['products'] as $productItem) {
-                $productDB = Product::find($productItem['product_id']);
-
-                if(!$productDB) {
-                    return response()->json([
-                        'message' => "Product ID {$productItem['product_id']} not found",
-                    ], Response::HTTP_NOT_FOUND);
-                }
+                $productDB = $this->productRepository->getById($productItem['product_id']);
 
                 $previousQuantity = $sale->products->find($productItem['product_id'])->pivot->quantity;
                 $newQuantity = $productItem['quantity'];
-                $productDB->stock += $previousQuantity;
+
+                $this->productRepository->updateStock($productDB, $previousQuantity);
 
                 if($productDB->stock < $newQuantity) {
                     return response()->json([
@@ -153,14 +134,9 @@ class SaleController extends Controller
                     ], Response::HTTP_BAD_REQUEST);
                 }
 
-                $productDB->stock -= $newQuantity;
+                $this->productRepository->updateStock($productDB, -$newQuantity);
 
-                $productDB->save();
-
-                $sale->products()->updateExistingPivot(
-                    $productItem['product_id'],
-                    ['quantity' => $newQuantity]
-                );
+                $this->saleRepository->updatePivot($sale, $productItem['product_id'], $newQuantity);
 
             }
 
@@ -187,7 +163,7 @@ class SaleController extends Controller
     {
         try {
 
-            $sales = Sale::with(['products:id,name,price,sales_products.quantity as quantity'])->get();
+            $sales = $this->saleRepository->history();
 
             return response()->json([
                 'message' => 'Sales retrieved successfully',
