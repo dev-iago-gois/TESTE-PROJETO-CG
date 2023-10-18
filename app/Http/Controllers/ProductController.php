@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Repositories\ProductsRepository;
 use App\Http\Requests\CreateProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
@@ -11,6 +12,9 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
+    public function __construct(
+        private ProductsRepository $repository
+    ) {}
     public function create(CreateProductRequest $request): JsonResponse
     {
         DB::beginTransaction();
@@ -18,7 +22,8 @@ class ProductController extends Controller
         try {
 
             $data = $request->validated();
-            $product = Product::create($data);
+
+            $product = $this->repository->create($data);
 
             DB::commit();
 
@@ -43,7 +48,7 @@ class ProductController extends Controller
     {
         try {
 
-            $products = Product::all();
+            $products = $this->repository->getAll();
 
             return response()->json([
                 "message" => "Products retrieved successfully",
@@ -63,13 +68,7 @@ class ProductController extends Controller
     {
         try {
 
-            $product = Product::find($productId);
-
-            if (!$product) {
-                return response()->json([
-                    'message' => 'Product not found',
-                ], Response::HTTP_NOT_FOUND);
-            }
+            $product = $this->repository->getById($productId);
 
             return response()->json([
                 "message" => "Product retrieved successfully",
@@ -91,15 +90,8 @@ class ProductController extends Controller
         try {
 
             $data = $request->validated();
-            $product = Product::find($productId);
 
-            if (!$product) {
-                return response()->json([
-                    'message' => 'Product not found',
-                ], Response::HTTP_NOT_FOUND);
-            }
-
-            $product->update($data);
+            $product = $this->repository->update($productId, $data);
 
             DB::commit();
 
@@ -126,20 +118,12 @@ class ProductController extends Controller
 
         try {
 
-            $product = Product::find($productId);
-
-            if (!$product) {
-                return response()->json([
-                    'message' => 'Product not found',
-                ], Response::HTTP_NOT_FOUND);
-            }
-
-            $product->delete();
+            $this->repository->delete($productId);
 
             DB::commit();
 
             return response()->json([
-                "message" => "Product {$product->name} deleted successfully",
+                "message" => "Product deleted successfully",
             ], Response::HTTP_OK);
 
         } catch (\Exception $e) {
