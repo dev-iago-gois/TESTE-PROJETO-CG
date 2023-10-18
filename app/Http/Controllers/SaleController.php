@@ -74,43 +74,50 @@ class SaleController extends Controller
 
     public function cancel(int $saleId): JsonResponse
     {
-        // get sale by id
-        $sale = Sale::find($saleId);
-        // dd($sale);
-        // if sale does not exist return error message
-        if(!$sale) {
+        DB::beginTransaction();
+
+        try {
+
+            $sale = Sale::find($saleId);
+
+            if(!$sale) {
+                return response()->json([
+                    'message' => "Sale ID {$saleId} not found",
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            if($sale->status != 'pending') {
+                return response()->json([
+                    'message' => "Sale ID {$saleId} cannot be canceled",
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            foreach ($sale->products as $productItem) {
+
+                $quantitySold = $productItem->pivot->quantity;
+                $productItem->stock += $quantitySold;
+
+                $productItem->save();
+            }
+
+            $sale->update(['status' => 'canceled']);
+
+            DB::commit();
+
             return response()->json([
-                'message' => "Sale ID {$saleId} not found",
-            ], HttpStatusMapper::getStatusCode("NOT_FOUND"));
+                'message' => "Sale ID {$saleId} canceled successfully",
+                'data' => $sale,
+            ], Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+
+                DB::rollBack();
+
+                return response()->json([
+                    "message" => "Sale cancelation failed",
+                    "error" => $e->getMessage(),
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        // if sale status is not pending return error message
-        if($sale->status != 'pending') {
-            return response()->json([
-                'message' => "Sale ID {$saleId} cannot be canceled",
-            ], HttpStatusMapper::getStatusCode("BAD_REQUEST"));
-        }
-        // get products from sale
-        $products = $sale->products;
-        // dd($products);
-        // foreach product in sale
-        foreach ($products as $product) {
-            // get product in DB by id
-            // $productDB = Product::find($product->id);
-            $productInSale = $sale->products->find($product->id);
-            $quantitySold = $productInSale->pivot->quantity;
-            // dd($product->stock);
-            // add stock to product
-            $product->stock += $quantitySold;
-            // save product
-            $product->save();
-        }
-        // update sale status to canceled
-        $sale->update(['status' => 'canceled']);
-        // return updated sale
-        return response()->json([
-            'message' => "Sale ID {$saleId} canceled successfully",
-            'data' => $sale,
-        ], HttpStatusMapper::getStatusCode("SUCCESS"));
     }
 
     public function update(int $saleId, Request $request): JsonResponse
