@@ -24,7 +24,7 @@ class SaleController extends Controller
         try {
 
             $data = $request->validated();
-            $serviceResponse = $this->saleService->create($data);
+            $serviceResponse = $this->saleService->handleCreate($data);
 
             DB::commit();
 
@@ -50,7 +50,7 @@ class SaleController extends Controller
 
         try {
 
-            $serviceResponse = $this->saleService->cancel($saleId);
+            $serviceResponse = $this->saleService->handleCancel($saleId);
 
             DB::commit();
 
@@ -77,7 +77,7 @@ class SaleController extends Controller
         try {
 
             $data = $request->validated();
-            $serviceResponse = $this->saleService->update($saleId, $data);
+            $serviceResponse = $this->saleService->handleUpdate($saleId, $data);
 
             DB::commit();
 

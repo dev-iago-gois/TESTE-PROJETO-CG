@@ -12,7 +12,7 @@ class SaleService
         private ProductsRepository $productRepository
     ) {}
 
-    public function create(array $data): object
+    public function handleCreate(array $data): object
     {
         $sale = $this->saleRepository->create($data['customer_name']);
 
@@ -35,7 +35,7 @@ class SaleService
 
         return (object)["id" => $sale->id];
     }
-    public function cancel(int $saleId): object
+    public function handleCancel(int $saleId): object
     {
         $sale = $this->saleRepository->getById($saleId);
 
@@ -52,7 +52,7 @@ class SaleService
 
         return (object)["sale" => $sale];
     }
-    public function update(int $saleId, array $data): object
+    public function handleUpdate(int $saleId, array $data): object
     {
         $sale = $this->saleRepository->getById($saleId);
 
