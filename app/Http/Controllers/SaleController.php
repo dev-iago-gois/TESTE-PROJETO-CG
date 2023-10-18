@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateSaleRequest;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Utils\HttpStatusMapper;
@@ -11,23 +12,13 @@ use Illuminate\Http\Response;
 
 class SaleController extends Controller
 {
-    public function create(Request $request): JsonResponse
+    public function create(CreateSaleRequest $request): JsonResponse
     {
-        // dd($request->all());
-        // validate incoming request
-        $request->validate([
-            'customer_name' => 'required|string|max:100',
-            'products' => 'required|array',
-            'products.*.product_id' => 'required|integer|exists:products,id',
-            'products.*.quantity' => 'required|integer|min:1',
-        ]);
-
-        // create sale
+        $data = $request->validated();
         $sale = Sale::create([
-            'customer_name' => $request->customer_name,
-            // 'status' => 'pending', nao precisa pois na migration ja esta definido um valor default de pending
+            'customer_name' => $data["customer_name"]
         ]);
-
+        dd($sale);
         // get products array
         $productsRequestData = $request->input('products');
         // aqui faz um for por cada produto dentro do array productsRequestData definido acima

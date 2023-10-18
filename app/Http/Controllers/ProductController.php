@@ -9,19 +9,32 @@ use App\Utils\HttpStatusMapper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
     public function create(CreateProductRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        $product = Product::create($data);
+        DB::beginTransaction();
 
-        return response()->json([
-            "message" => "Product created successfully",
-            "data" => $product,
-        ], Response::HTTP_CREATED);
+        try {
+
+            $data = $request->validated();
+            $product = Product::create($data);
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                "message" => "Product creation failed",
+                "error" => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+
+        }
     }
 
     public function getAll(): JsonResponse
