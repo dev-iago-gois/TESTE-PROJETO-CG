@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Repositories\
+{
+    ProductsRepository,
+    SalesRepository
+};
 use App\Http\Requests\CreateSaleRequest;
 use App\Http\Requests\UpdateSaleRequest;
 use App\Models\Product;
@@ -12,6 +17,10 @@ use Illuminate\Support\Facades\DB;
 
 class SaleController extends Controller
 {
+    public function __construct(
+        private SalesRepository $saleRepository,
+        private ProductsRepository $productRepository
+    ) {}
     public function create(CreateSaleRequest $request): JsonResponse
     {
 
@@ -20,43 +29,28 @@ class SaleController extends Controller
         try {
 
             $data = $request->validated();
-            $sale = Sale::create([
-                'customer_name' => $data["customer_name"]
-            ]);
+            $sale = $this->saleRepository->create($data['customer_name']);
 
             foreach ($data['products'] as $productItem) {
 
-                $product = Product::find($productItem['product_id']);
+                $product = $this->productRepository->getById($productItem['product_id']);
 
-                if(!$product) {
+                // TODO pode virar uma funcao de check stock
+                if($product->stock < $productItem['quantity']) {
                     return response()->json([
-                        'message' => "Product ID {$productItem['product_id']} not found",
-                    ], Response::HTTP_NOT_FOUND);
+                        'message' => "Product {$product->name} is out of stock",
+                    ], Response::HTTP_BAD_REQUEST);
                 }
 
-                if($product) {
-                    // TODO pode virar uma funcao de check stock
-                    if($product->stock < $productItem['quantity']) {
-                        return response()->json([
-                            'message' => "Product {$product->name} is out of stock",
-                        ], Response::HTTP_BAD_REQUEST);
-                    }
+                $this->productRepository->updateStock($product, -$productItem['quantity']);
 
-                    $product->stock -= $productItem['quantity'];
-                    $product->save();
-                }
-
-                $sale->products()->attach(
-                    $product->id,
-                    ['quantity' => $productItem['quantity']]
-                );
+                $this->saleRepository->attachProductToSale($sale, $product, $productItem['quantity']);
             }
 
             DB::commit();
 
             return response()->json([
-                "message" => "Sale created successfully",
-                "data" => $sale,
+                "message" => "Sale {$sale->id} created successfully",
             ], Response::HTTP_CREATED);
 
         } catch (\Exception $e) {

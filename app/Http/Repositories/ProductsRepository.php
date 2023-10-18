@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Repositories;
+
 use App\Models\Product;
 
 class ProductsRepository
@@ -25,6 +26,12 @@ class ProductsRepository
         $product = $this->model->findOrFail($id);
         $product->update($data);
         return $product;
+    }
+    public function updateStock(Product $product, int $quantity)
+    {
+        $product->stock += $quantity;
+        $product->save();
+        return $product->stock;
     }
     public function delete(int $id): void
     {
