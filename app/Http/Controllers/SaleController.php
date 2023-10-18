@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateSaleRequest;
+use App\Http\Requests\UpdateSaleRequest;
 use App\Models\Product;
 use App\Models\Sale;
-use App\Utils\HttpStatusMapper;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
@@ -32,7 +31,7 @@ class SaleController extends Controller
                 if(!$product) {
                     return response()->json([
                         'message' => "Product ID {$productItem['product_id']} not found",
-                    ], HttpStatusMapper::getStatusCode("NOT_FOUND"));
+                    ], Response::HTTP_NOT_FOUND);
                 }
 
                 if($product) {
@@ -120,91 +119,94 @@ class SaleController extends Controller
         }
     }
 
-    public function update(int $saleId, Request $request): JsonResponse
+    public function update(int $saleId, UpdateSaleRequest $request): JsonResponse
     {
-        // validate incoming request
-        $request->validate([
-            'products' => 'required|array',
-            'products.*.product_id' => 'required|integer|exists:products,id',
-            'products.*.quantity' => 'required|integer|min:1',
-        ]);
+        DB::beginTransaction();
 
-        // get sale by id
-        $sale = Sale::find($saleId);
-        // if sale does not exist return error message
-        if(!$sale) {
-            return response()->json([
-                'message' => "Sale ID {$saleId} not found",
-            ], HttpStatusMapper::getStatusCode("NOT_FOUND"));
-        }
-        // if sale status is not pending return error message
-        if($sale->status != 'pending') {
-            return response()->json([
-                'message' => "Sale ID {$saleId} cannot be updated",
-            ], HttpStatusMapper::getStatusCode("BAD_REQUEST"));
-        }
+        try {
 
-        $originalQuantities = [];
-        foreach ($sale->products as $product) {
-            // dd($product->pivot->quantity);
-            $originalQuantities[$product->id] = $product->pivot->quantity;
-        }
-        // dd($originalQuantities);
+            $data = $request->validated();
+            $sale = Sale::find($saleId);
 
-        foreach ($request->input('products') as $productItem) {
-            $productInSale = $sale->products->find($productItem['product_id']);
-            // $quantitySold = $productInSale->pivot->quantity;
-            $productDB = Product::find($productItem['product_id']);
-
-            if(!$productInSale) {
+            if(!$sale) {
                 return response()->json([
-                    'message' => "Product ID {$productItem->id} not found",
-                ], HttpStatusMapper::getStatusCode("NOT_FOUND"));
+                    'message' => "Sale ID {$saleId} not found",
+                ], Response::HTTP_NOT_FOUND);
             }
 
-            $newQuantity = $productItem['quantity'];
-
-            $productDB->stock += $originalQuantities[$productItem['product_id']];
-            // dd([$productDB->stock, $newQuantity]);
-            // dd($originalQuantities[$productItem['product_id']]);
-
-            if($productDB->stock < $newQuantity) {
+            if($sale->status != 'pending') {
                 return response()->json([
-                    'message' => "Product {$productInSale->name} is out of stock",
-                ], HttpStatusMapper::getStatusCode("BAD_REQUEST"));
-                // TODO
-                // Response::HTTP_BAD_REQUEST;
+                    'message' => "Sale ID {$saleId} cannot be updated",
+                ], Response::HTTP_BAD_REQUEST);
             }
-            // dd($productDB->stock);
-            // TODO O ERRO TA POR AQUI
 
-            $productDB->stock -= $newQuantity;
-            // dd([$productDB->stock, $newQuantity]);
+            foreach ($data['products'] as $productItem) {
+                $productDB = Product::find($productItem['product_id']);
 
-            $productDB->save();
+                if(!$productDB) {
+                    return response()->json([
+                        'message' => "Product ID {$productItem['product_id']} not found",
+                    ], Response::HTTP_NOT_FOUND);
+                }
 
-            $productInSale->pivot->quantity = $newQuantity;
-            $productInSale->pivot->save();
+                $previousQuantity = $sale->products->find($productItem['product_id'])->pivot->quantity;
+                $newQuantity = $productItem['quantity'];
+                $productDB->stock += $previousQuantity;
+
+                if($productDB->stock < $newQuantity) {
+                    return response()->json([
+                        'message' => "Product {$productDB->name} is out of stock",
+                    ], Response::HTTP_BAD_REQUEST);
+                }
+
+                $productDB->stock -= $newQuantity;
+
+                $productDB->save();
+
+                $sale->products()->updateExistingPivot(
+                    $productItem['product_id'],
+                    ['quantity' => $newQuantity]
+                );
+
+            }
+
+            DB::commit();
+
+            return response()->json([
+                "message" => "Sale ID {$saleId} updated successfully",
+                "data" => $sale,
+            ], Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                "message" => "Sale update failed",
+                "error" => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+
         }
-
-        $updatedSale = $sale->products();
-        // return updated sale
-        return response()->json([
-            'message' => "Sale ID {$saleId} updated successfully",
-            'data' => $updatedSale,
-        ], HttpStatusMapper::getStatusCode("SUCCESS"));
     }
 
     public function getAll(): JsonResponse
     {
         try {
+
             $sales = Sale::with(['products:id,name,price,sales_products.quantity as quantity'])->get();
+
             return response()->json([
                 'message' => 'Sales retrieved successfully',
                 'data' => $sales,
-            ], HttpStatusMapper::getStatusCode("SUCCESS"));
-        } catch (\Throwable $th) {
-            //throw $th;
+            ], Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => 'Sales retrieval failed',
+                'error' => $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+
         }
     }
 }
