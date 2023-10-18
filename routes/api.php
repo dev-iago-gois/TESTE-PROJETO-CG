@@ -23,7 +23,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(
     [
         "prefix" => "products",
-        // "middleware" => "auth:sanctum",
     ],
     function () {
         Route::post("/", [ProductController::class, "create"]);
@@ -37,7 +36,6 @@ Route::group(
 Route::group(
     [
         "prefix" => "sales",
-        // "middleware" => "auth:sanctum",
     ],
     function () {
         Route::post("/", [SaleController::class, "create"]);
